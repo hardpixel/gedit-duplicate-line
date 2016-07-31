@@ -1,0 +1,9 @@
+[Plugin]
+Loader=python3
+Module=duplicate_line
+IAge=3
+Name=Duplicate Line
+Description=Allows to duplicate the current line on the above or below line.
+Authors=Jonian Guveli <jonian@hardpixel.eu>
+Copyright=Copyright © 2014 Hardpixel
+Website=http://hardpixel.eu
