@@ -24,13 +24,22 @@ class DuplicateLineWindowActivatable(GObject.Object, Gedit.WindowActivatable):
 		return False
 
 	def on_duplicate_line_key_press(self, action=None, user_data=None):
+		doc = self.window.get_active_document()
+		selection_iter = doc.get_selection_bounds()
+
 		view = self.window.get_active_view()
 		buf = view.get_buffer()
 		insert = buf.get_insert()
-		start = buf.get_iter_at_mark(insert)
-		start.set_line_offset(0)
-		end = start.copy()
-		end.forward_line()
+
+		if len(selection_iter) == 0:
+			start = buf.get_iter_at_mark(insert)
+			start.set_line_offset(0)
+			end = start.copy()
+			end.forward_line()
+		else:
+			start = selection_iter[0]
+			end = selection_iter[1]
+
 		text = buf.get_slice(start, end, True)
 
 		if text is not None and text != "":
