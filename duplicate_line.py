@@ -8,54 +8,54 @@ from gi.repository import GObject, Gdk, Gtk, Gedit
 
 class DuplicateLineWindowActivatable(GObject.Object, Gedit.WindowActivatable):
 
-	window = GObject.property(type=Gedit.Window)
+  window = GObject.property(type=Gedit.Window)
 
-	def __init__(self):
-		GObject.Object.__init__(self)
+  def __init__(self):
+    GObject.Object.__init__(self)
 
-		self._handler_id = None
+    self._handler_id = None
 
-	def do_activate(self):
-		self._handler_id = self.window.connect("key-press-event", self.on_key_press)
+  def do_activate(self):
+    self._handler_id = self.window.connect("key-press-event", self.on_key_press)
 
-	def do_deactivate(self):
-		self.window.disconnect(self._handler_id)
+  def do_deactivate(self):
+    self.window.disconnect(self._handler_id)
 
-	def on_key_press(self, _key, event):
-		if event.keyval in (Gdk.KEY_D, Gdk.KEY_d):
-			modifiers = event.state & Gtk.accelerator_get_default_mod_mask()
+  def on_key_press(self, _key, event):
+    if event.keyval in (Gdk.KEY_D, Gdk.KEY_d):
+      modifiers = event.state & Gtk.accelerator_get_default_mod_mask()
 
-			if modifiers == Gdk.ModifierType.CONTROL_MASK:
-				self.duplicate_selection()
-				return True
+      if modifiers == Gdk.ModifierType.CONTROL_MASK:
+        self.duplicate_selection()
+        return True
 
-		return False
+    return False
 
-	def duplicate_selection(self):
-		doc = self.window.get_active_document()
-		selection_iter = doc.get_selection_bounds()
+  def duplicate_selection(self):
+    doc = self.window.get_active_document()
+    selection_iter = doc.get_selection_bounds()
 
-		view = self.window.get_active_view()
-		buf = view.get_buffer()
-		insert = buf.get_insert()
+    view = self.window.get_active_view()
+    buf = view.get_buffer()
+    insert = buf.get_insert()
 
-		if len(selection_iter) == 0:
-			start = buf.get_iter_at_mark(insert)
-			start.set_line_offset(0)
-			end = start.copy()
-			end.forward_line()
-		else:
-			start = selection_iter[0]
-			end = selection_iter[1]
+    if len(selection_iter) == 0:
+      start = buf.get_iter_at_mark(insert)
+      start.set_line_offset(0)
+      end = start.copy()
+      end.forward_line()
+    else:
+      start = selection_iter[0]
+      end = selection_iter[1]
 
-		text = buf.get_slice(start, end, True)
+    text = buf.get_slice(start, end, True)
 
-		if text is not None and text != "":
-			is_end = end.is_end()
-			buf.begin_user_action()
-			buf.insert(start, text)
+    if text is not None and text != "":
+      is_end = end.is_end()
+      buf.begin_user_action()
+      buf.insert(start, text)
 
-			if is_end:
-				buf.insert(start, "\n")
+      if is_end:
+        buf.insert(start, "\n")
 
-			buf.end_user_action()
+      buf.end_user_action()
