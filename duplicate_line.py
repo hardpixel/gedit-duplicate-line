@@ -16,7 +16,7 @@ class DuplicateLineWindowActivatable(GObject.Object, Gedit.WindowActivatable):
     self._handler_id = None
 
   def do_activate(self):
-    self._handler_id = self.window.connect("key-press-event", self.on_key_press)
+    self._handler_id = self.window.connect('key-press-event', self.on_key_press)
 
   def do_deactivate(self):
     self.window.disconnect(self._handler_id)
@@ -29,28 +29,26 @@ class DuplicateLineWindowActivatable(GObject.Object, Gedit.WindowActivatable):
         self.duplicate_selection()
         return True
 
-    return False
-
   def duplicate_selection(self):
-    doc = self.window.get_active_document()
-    selection_iter = doc.get_selection_bounds()
+    doc    = self.window.get_active_document()
+    bounds = doc.get_selection_bounds()
 
-    view = self.window.get_active_view()
-    buf = view.get_buffer()
+    view   = self.window.get_active_view()
+    buf    = view.get_buffer()
     insert = buf.get_insert()
 
-    if len(selection_iter) == 0:
+    if len(bounds) == 0:
       start = buf.get_iter_at_mark(insert)
       start.set_line_offset(0)
+
       end = start.copy()
       end.forward_line()
     else:
-      start = selection_iter[0]
-      end = selection_iter[1]
+      start, end = bounds
 
     text = buf.get_slice(start, end, True)
 
-    if text is not None and text != "":
+    if text is not None and text != '':
       is_end = end.is_end()
       buf.begin_user_action()
       buf.insert(start, text)
